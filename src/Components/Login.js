@@ -2,14 +2,17 @@ import React, { useState, useRef } from "react";
 import Header from "./Header";
 import { checkValidData } from "../utils/validate";
 import { auth } from "../utils/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import {  useNavigate } from "react-router-dom";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { SIGN_OUT_IMG } from "../utils/constant";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [signInForm, setSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const name = useRef(null);
@@ -17,59 +20,67 @@ const Login = () => {
   const password = useRef(null);
 
   const handleButtonClick = () => {
-    const message = checkValidData(email.current.value, password.current.value);
+    const message = checkValidData( email.current.value, password.current.value ,name);
     setErrorMessage(message);
-    if(message) return;
+    if (message) return;
 
-    if(!signInForm) {
+    if (!signInForm) {
       // Sign up logic
-      createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-updateProfile(user, {
-  displayName: name.current.value, photoURL: "https://images.pexels.com/photos/2100553/pexels-photo-2100553.jpeg?auto=compress&cs=tinysrgb&w=600"
-}).then(() => {
-  // Profile updated!
-  const { uid, email, displayName, photoURL } = auth.currentUser;
-  dispatch(
-    addUser({
-      uid: uid,
-      email: email,
-      displayName: displayName,
-      photoURL: photoURL,
-    })
-  );
-  navigate("/browser");
-}).catch((error) => {
-  // An error occurred
-});
-    console.log(user);
-
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    setErrorMessage("User not found.");
-  })
-
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: SIGN_OUT_IMG,
+          })
+            .then(() => {
+              // Profile updated!
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+            })
+            .catch((error) => {
+              // An error occurred
+            });
+          console.log(user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode + errorMessage);
+          setErrorMessage("User not found.");
+        });
     } else {
       // Sign in logic
-      signInWithEmailAndPassword(auth, email.current.value, password.current.value)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    console.log(user);
-    navigate("/browser");
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          const {displayName} = auth.currentUser;
+          dispatch(addUser({displayName: displayName}))
 
-
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    setErrorMessage("User not found.");
-
-  })
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage("User not found.");
+        });
     }
   };
   const toggleButton = () => {
@@ -94,7 +105,7 @@ updateProfile(user, {
           </h1>
           {!signInForm && (
             <input
-            ref={name}
+              ref={name}
               type="text"
               placeholder="Full Name"
               className="mt-4 px-3 py-3 lg:w-80 outline-none rounded-md"

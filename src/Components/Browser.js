@@ -1,28 +1,21 @@
-import React from 'react'
-import { signOut } from 'firebase/auth';
-import { auth } from "../utils/firebase";
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react'
+import Header from './Header';
+import { API_OPTIONS } from '../utils/constant';
 const Browser = () => {
-  const navigate = useNavigate();
-  const user = useSelector(store => store.user);
-  const handleSignOut = () => {
-
-signOut(auth).then(() => {
-  // Sign-out successful.
-  navigate("/");
-}).catch((error) => {
-  // An error happened.
-});
-  }
+const getNowPlayingMovies = async () => {
+  const data = await fetch("https://api.themoviedb.org/3/movie/now_playing?page=1", API_OPTIONS
+  );
+  const json = await data.json();
+  console.log(json);
+};
+useEffect(() => {
+  getNowPlayingMovies();
+},[])
   return (
-    <div className='flex justify-between px-12 py-2'>
-    <img className="w-36" src="https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png" alt="" />
-    <div className='flex justify-between ml-2'>
-    <img className="w-8 h-8" src={user?.photoURL} alt="" />
-    <button onClick={handleSignOut} className='cursor-pointer'>Sign Out</button>
-    </div>
-    </div>
+    <>
+    <Header/>
+    <img className="bg-center bg-no-repeat bg-cover w-screen" src="https://occ-0-6246-2164.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABVDnrRqvtC6x8hD62R0mY9cwgf2MX7jE2zifHpJPcq6dhEVIVcHrPD8nV5G80Rff7lBjHTWDjVgZiZaMYfKPW78ydxg4F6XZ44wN.webp?r=dc8" alt="" />
+    </>
   )
 }
 

@@ -14,6 +14,10 @@
   - created Redux store with userSlice
   - Implemented Sign out
   - Updated Profile 
+  - Bugfix: sign up user displayName and profile picture update
+  - Bugfix: if the user is not logged in Redirect / browse to Login Page and vice-versa
+  - unsubscribed to the onAuthStateChanged Callback
+  - add hardcode values to the constants files
   
 
   # FEATURES
@@ -32,3 +36,5 @@
     - NetflixGPT
        - SearchBar
        - Movie Suggestions
+
+       -tmdb - nabila@1234
