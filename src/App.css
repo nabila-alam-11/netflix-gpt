@@ -4,3 +4,6 @@
 input {
     background-color: rgb(58, 57, 57);
 }
+.trailer::after {
+    content: "";
+}
